@@ -1,0 +1,33 @@
+.userinfo {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+
+    .userinfos {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap : 20px;
+
+        .image{
+            width : 40px ;
+            height: 40px;
+            border-radius: 50%;
+        }
+
+    }
+
+    .options {
+        display : flex ;
+        gap : 10px ;
+        justify-content: center;
+        align-items: center;
+
+        .icons {
+            width: 15px;
+            height: 15px;
+            cursor: pointer;
+        }
+    }
+}
