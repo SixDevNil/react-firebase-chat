@@ -43,7 +43,7 @@ const Chat = () => {
               Lorem ipsum dolor sit, amet consectetur adipisicing elit. Corrupti
               fuga dolorum id eaque amet reprehenderit natus sit eligendi
               maiores blanditiis perferendis et, ratione iure ipsam facere
-              obcaecati ipsum officiis alias.
+              obcaecati ipsum officiis alia
             </div>
             <div className="timesTamp">
               <p>1 min ago</p>
