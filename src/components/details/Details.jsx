@@ -82,7 +82,10 @@ const Details = () => {
           </div>
         </div>{" "}
       </div>
-      <button className="actionButton">Block User</button>
+      <div className="action">
+        <button className="actionButton">Block User</button>{" "}
+        <button className="logout">Logout</button>
+      </div>
     </div>
   );
 };
