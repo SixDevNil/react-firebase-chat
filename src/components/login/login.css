@@ -18,6 +18,7 @@
         color : white ;
         border-radius: 10px;
         padding: 5px;
+        cursor : pointer ;
     }
 
     .left {
@@ -36,7 +37,12 @@
         justify-content: center;
         align-items: center;
         gap: 20px;
-
+         form{
+            display : flex ;
+            flex-direction: column;
+            gap : 20px ;
+            align-items: center;
+         }
         .imageControllers {
             display: flex;
             justify-content: center;
@@ -56,5 +62,6 @@
             }
 
         }
+        
     }
 }

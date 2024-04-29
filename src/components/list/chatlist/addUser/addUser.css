@@ -1,0 +1,55 @@
+.addUser {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+    bottom: 0;
+    margin: auto;
+    width: max-content;
+    height: max-content;
+    background-color: rgba(17, 25, 40, 0.9);
+    border-radius: 10px;
+    padding: 30px;
+    ;
+    gap: 20px;
+
+    button {
+        padding: 5px;
+        border-radius: 10px;
+        background-color: #1a73e8;
+        color: white;
+        border: none;
+        cursor: pointer;
+    }
+    .searchUser {
+        display: flex;
+        gap: 20px;
+
+        input {
+            padding: 10px 5px;
+            outline: none;
+            border: none;
+            border-radius: 10px;
+        }
+
+       
+    }
+
+    .userContainer {
+        display : flex ;
+        justify-content: space-between;
+        .userInfos {
+            display : flex ;
+            align-items: center;
+            gap : 20px ;
+            img{
+                width : 40px ;
+                height : 40px ;
+                border-radius: 50%;
+                object-fit: cover;
+            }
+        }
+    }
+}

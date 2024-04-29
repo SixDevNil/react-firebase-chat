@@ -1,6 +1,10 @@
-import React, { useEffect, useState } from "react";
+import { useState } from "react";
 import "./login.css";
 import { toast } from "react-toastify";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { auth, db } from "../../lib/firebase";
+import { doc, setDoc } from "firebase/firestore";
+import upload from "../../lib/upload";
 
 const Login = () => {
   const [avatar, setAvatar] = useState({
@@ -17,38 +21,84 @@ const Login = () => {
     }
   };
 
-  const handleNotification = (e) => {
+  const handleRegister = async (e) => {
     e.preventDefault();
-    toast.success("ao ??");
+    const formData = new FormData(e.target);
+    const { username, email, password } = Object.fromEntries(formData);
+
+    try {
+      const imgUrl = await upload(avatar.file);
+
+      const res = await createUserWithEmailAndPassword(auth, email, password);
+
+      await setDoc(doc(db, "users", res.user.uid), {
+        username,
+        email,
+        avatar : imgUrl,
+        id: res.user.uid,
+        blocked: [],
+      });
+
+      await setDoc(doc(db, "userchats", res.user.uid), {
+        chat: [],
+      });
+
+      toast.success("user created");
+    } catch (error) {
+      console.log(error);
+      toast.error(error.message);
+    }
   };
 
   return (
     <div className="login">
       <div className="left">
         <h1>Welcome back,</h1>
-        <input type="text" className="infos" placeholder="Email" />
-        <input type="password" className="infos" placeholder="Password" />
+        <input type="text" className="infos" placeholder="Email" name="email" />
+        <input
+          type="password"
+          className="infos"
+          placeholder="Password"
+          name="password"
+        />
         <button>Sign In</button>
       </div>
       <div className="right">
         <h1>Create an Account</h1>
-        <div className="imageControllers">
-          <img src={avatar.url || "./avatar.png"} alt="" />
-          <label htmlFor="photo" style={{ cursor: "pointer" }}>
-            Upload an image
-          </label>
+        <form action="" onSubmit={handleRegister}>
+          <div className="imageControllers">
+            <img src={avatar.url || "./avatar.png"} alt="" />
+            <label htmlFor="photo" style={{ cursor: "pointer" }}>
+              Upload an image
+            </label>
+            <input
+              type="file"
+              name="file"
+              id="photo"
+              className="file"
+              onChange={handleURL}
+            />
+          </div>
           <input
-            type="file"
-            name=""
-            id="photo"
-            className="file"
-            onChange={handleURL}
+            type="text"
+            className="infos"
+            placeholder="Username"
+            name="username"
           />
-        </div>
-        <input type="text" className="infos" placeholder="Username" />
-        <input type="text" className="infos" placeholder="Email" />
-        <input type="password" className="infos" placeholder="Password" />
-        <button onClick={handleNotification}>Sign Up</button>
+          <input
+            type="text"
+            className="infos"
+            placeholder="Email"
+            name="email"
+          />
+          <input
+            type="password"
+            className="infos"
+            placeholder="Password"
+            name="password"
+          />
+          <button>Sign Up</button>
+        </form>
       </div>
     </div>
   );
