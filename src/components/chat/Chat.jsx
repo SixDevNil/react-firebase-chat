@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import "./chat.css";
 import EmojiPicker from "emoji-picker-react";
+import { useUserStore } from "../../lib/userStore";
 
 const Chat = () => {
   const [open, setOpen] = useState(false);
@@ -16,16 +17,18 @@ const Chat = () => {
     setText((prev) => prev + e.emoji);
     setOpen(false);
   };
-  console.log(text);
+
+  const {currentUser} = useUserStore()
+
   return (
     <div className="chatContainer">
       <div className="top">
         <div className="userInfo">
           <div className="pdp">
-            <img src="/avatar.png" alt="avatar" className="avatar" />
+            <img src={currentUser.avatar || "/avatar.png"} alt="avatar" className="avatar" />
           </div>
           <div className="info">
-            <p className="username">Jane Doe</p>
+            <p className="username">{currentUser.username}</p>
             <span className="detail">Lorem ipsum dolor sit amet.</span>
           </div>
         </div>

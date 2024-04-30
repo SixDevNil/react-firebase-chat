@@ -1,12 +1,19 @@
 import React from "react";
 import "./details.css";
+import { auth } from "../../lib/firebase";
+import { useUserStore } from "../../lib/userStore";
 
 const Details = () => {
+
+  const handleLogOut = () => {
+    auth.signOut()
+  }
+  const {currentUser} = useUserStore()
   return (
     <div className="detailContainer">
       <div className="infoUser">
-        <img src="/avatar.png" alt="" className="pdp" />
-        <span className="nameUser">Jane Doe</span>
+        <img src={currentUser.avatar || "/avatar.png"} alt="" className="pdp" />
+        <span className="nameUser">{currentUser.username}</span>
         <span className="bioUser">Lorem ipsum dolor sit amet.</span>
       </div>
       <div className="details">
@@ -84,7 +91,7 @@ const Details = () => {
       </div>
       <div className="action">
         <button className="actionButton">Block User</button>{" "}
-        <button className="logout">Logout</button>
+        <button className="logout" onClick={handleLogOut}>Logout</button>
       </div>
     </div>
   );

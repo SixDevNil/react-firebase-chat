@@ -1,7 +1,10 @@
 import { useState } from "react";
 import "./login.css";
 import { toast } from "react-toastify";
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+} from "firebase/auth";
 import { auth, db } from "../../lib/firebase";
 import { doc, setDoc } from "firebase/firestore";
 import upload from "../../lib/upload";
@@ -28,13 +31,12 @@ const Login = () => {
 
     try {
       const imgUrl = await upload(avatar.file);
-
       const res = await createUserWithEmailAndPassword(auth, email, password);
 
       await setDoc(doc(db, "users", res.user.uid), {
         username,
         email,
-        avatar : imgUrl,
+        avatar: imgUrl,
         id: res.user.uid,
         blocked: [],
       });
@@ -50,19 +52,40 @@ const Login = () => {
     }
   };
 
+  const handleLogIn = async (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    const { email, password } = Object.fromEntries(formData);
+
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+      toast.success("Logged in!");
+    } catch (error) {
+      toast.error(error.message);
+    }
+  };
+
   return (
     <div className="login">
       <div className="left">
         <h1>Welcome back,</h1>
-        <input type="text" className="infos" placeholder="Email" name="email" />
-        <input
-          type="password"
-          className="infos"
-          placeholder="Password"
-          name="password"
-        />
-        <button>Sign In</button>
+        <form action="" onSubmit={handleLogIn}>
+          <input
+            type="text"
+            className="infos"
+            placeholder="Email"
+            name="email"
+          />
+          <input
+            type="password"
+            className="infos"
+            placeholder="Password"
+            name="password"
+          />
+          <button>Sign in</button>
+        </form>
       </div>
+      <div className="separator"></div>
       <div className="right">
         <h1>Create an Account</h1>
         <form action="" onSubmit={handleRegister}>
