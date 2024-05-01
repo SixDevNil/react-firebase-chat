@@ -10,18 +10,19 @@ import { useUserStore } from "./lib/userStore";
 import { toast } from "react-toastify";
 
 const App = () => {
-  const { currentUser, isLoading, fetchUserInfo } = useUserStore();
+  const { currentUser, isLoading } = useUserStore();
 
-  useEffect(() => {
-    const unSub = onAuthStateChanged(auth, (user) => {
-      fetchUserInfo(user?.uid)
-      console.log(currentUser);
-    });
-    return () => {
-      unSub();
-    };
-  },[fetchUserInfo]);
+  // useEffect(() => {
+  //   const unSub = onAuthStateChanged(auth, (user) => {
+  //     // fetchUserInfo(user?.uid)
+  //     console.log(user);
+  //   });
+  //   return () => {
+  //     unSub();
+  //   };
+  // },[]);
 
+  
   if (isLoading) {
     toast.success("Loading...");
   }
