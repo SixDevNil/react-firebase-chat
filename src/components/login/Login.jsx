@@ -53,34 +53,20 @@ const Login = () => {
     }
   };
 
-  // const [login, setLogin] = useState(false)
   const handleLogIn = async (e) => {
     e.preventDefault();
-    // setLogin(true) ;
     const formData = new FormData(e.target);
     const { email, password } = Object.fromEntries(formData);
 
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      const user = auth.currentUser;
-      fetchUserInfo(user.uid) ;
+      // const user = auth.currentUser;
+      // fetchUserInfo(user.uid) ;
       toast.success("Logged in!");
     } catch (error) {
       toast.error(error.message);
     }
   };
-
-  // useEffect(() => {
-  //   if (login){
-  //     const unSub = onAuthStateChanged(auth, (user) => {
-  //       fetchUserInfo(user?.uid);
-  //     });
-  //     return () => {
-  //       unSub();
-  //       setLogin(false) ;
-  //     };
-  //   }
-  // },[login]);
 
   return (
     <div className="login">

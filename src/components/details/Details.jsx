@@ -4,10 +4,10 @@ import { auth } from "../../lib/firebase";
 import { useUserStore } from "../../lib/userStore";
 
 const Details = () => {
-  const { currentUser, fetchUserInfo } = useUserStore();
+  const { currentUser} = useUserStore();
   const handleLogOut = () => {
-    // auth.signOut();
-   fetchUserInfo(null);
+    auth.signOut();
+  //  fetchUserInfo(null);
   }
   return (
     <div className="detailContainer">
