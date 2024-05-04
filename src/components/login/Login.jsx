@@ -9,10 +9,10 @@ import {
 import { auth, db } from "../../lib/firebase";
 import { doc, setDoc } from "firebase/firestore";
 import upload from "../../lib/upload";
-import { useUserStore } from "../../lib/userStore";
+// import { useUserStore } from "../../lib/userStore";
 
 const Login = () => {
-  const { fetchUserInfo } = useUserStore();
+  // const { fetchUserInfo } = useUserStore();
   const [avatar, setAvatar] = useState({
     file: null,
     url: "",
