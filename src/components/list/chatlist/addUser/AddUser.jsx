@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { arrayUnion, collection, doc, getDocs, query, serverTimestamp, setDoc, updateDoc, where } from "firebase/firestore";
 import "./addUser.css";
 import {db} from '../../../../lib/firebase'
@@ -27,7 +27,7 @@ const AddUser = () => {
     }
   };
 
-  const handleAddUser = async (e) => {
+  const handleAddUser = async () => {
     const chatRef = collection(db, "chats");
     const userChats = collection(db, "userchats");
     try {
@@ -59,7 +59,6 @@ const AddUser = () => {
         }),
       });
 
-      console.log(newChatRef.id);
     } catch (error) {
       console.log(error);
     }
