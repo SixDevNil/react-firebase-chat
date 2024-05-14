@@ -2,30 +2,51 @@ import { useEffect, useRef, useState } from "react";
 import "./chat.css";
 import EmojiPicker from "emoji-picker-react";
 import { useUserStore } from "../../lib/userStore";
+import { doc, onSnapshot } from "firebase/firestore";
+import { db } from "../../lib/firebase";
+import { useChatStore } from "../../lib/chatStore";
 
 const Chat = () => {
   const [open, setOpen] = useState(false);
   const [text, setText] = useState("");
+  const [chat, setChat] = useState(null);
+
+  const { chatId } = useChatStore();
+  const { currentUser } = useUserStore();
 
   const endRef = useRef(null);
 
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [])
+  }, []);
+
+  useEffect(() => {
+    // raha tiana hiseho ilay componnet rehetra na null aza ilay chatId dia io, sinon any @ App no conditionnena
+    // if (chatId) {
+      const unSub = onSnapshot(doc(db, "chats", chatId), (res) => {
+        setChat(res.data());
+      });
+      return () => {
+        unSub();
+      };
+    // }
+  }, [chatId]);
 
   const handleEmojiClick = (e) => {
     setText((prev) => prev + e.emoji);
     setOpen(false);
   };
 
-  const {currentUser} = useUserStore()
-
   return (
     <div className="chatContainer">
       <div className="top">
         <div className="userInfo">
           <div className="pdp">
-            <img src={currentUser.avatar || "/avatar.png"} alt="avatar" className="avatar" />
+            <img
+              src={currentUser.avatar || "/avatar.png"}
+              alt="avatar"
+              className="avatar"
+            />
           </div>
           <div className="info">
             <p className="username">{currentUser.username}</p>
@@ -96,8 +117,8 @@ const Chat = () => {
         </div>
         <div className="messageItem own">
           <div className="message">
-            <img src="/conf.webp" alt="" className="photoJoint"/>
-            <div className="textMessage" >
+            <img src="/conf.webp" alt="" className="photoJoint" />
+            <div className="textMessage">
               Lorem ipsum dolor sit, amet consectetur adipisicing elit. Corrupti
               fuga dolorum id eaque amet reprehenderit natus sit eligendi
               maiores blanditiis perferendis et, ratione iure ipsam facere

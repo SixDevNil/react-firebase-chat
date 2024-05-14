@@ -4,12 +4,14 @@ import AddUser from "./addUser/AddUser";
 import { useUserStore } from "../../../lib/userStore";
 import { doc, getDoc, onSnapshot } from "firebase/firestore";
 import { db } from "../../../lib/firebase";
+import { useChatStore } from "../../../lib/chatStore";
 
 const Chatlist = () => {
   const [chats, setChats] = useState([]);
   const [add, setAdd] = useState(false);
 
   const { currentUser } = useUserStore();
+  const { changeChat } = useChatStore();
 
   useEffect(() => {
     // get realtime data pour la liste des users eo @ chat avy any @ BD, "onSnapshot",
@@ -32,7 +34,6 @@ const Chatlist = () => {
 
         // màj du state Chats @ plus récent
         setChats(chatData.sort((a, b) => b.updatedAt - a.updatedAt));
-        // console.log({...chats});
       }
     );
     return () => {
@@ -44,6 +45,9 @@ const Chatlist = () => {
     setAdd(!add);
   };
 
+  const handleMessage = async (chat) => {
+    changeChat(chat.chatId, chat.user);
+  };
   return (
     <div className="chatlist">
       <div className="searchContainer">
@@ -62,9 +66,17 @@ const Chatlist = () => {
       </div>
       <div className="chatItem">
         {chats.map((chat) => (
-          <div className="item" key={chat.chatId}>
+          <div
+            className="item"
+            key={chat.chatId}
+            onClick={() => handleMessage(chat)}
+          >
             <div className="avatarContainer">
-              <img src={chat.user.avatar || "/avatar.png"} alt="avatar" className="userImage" />
+              <img
+                src={chat.user.avatar || "/avatar.png"}
+                alt="avatar"
+                className="userImage"
+              />
             </div>
             <div className="infoChat">
               <span>{chat.user.username}</span>
