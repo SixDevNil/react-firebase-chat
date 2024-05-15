@@ -1,10 +1,10 @@
 import React from "react";
 import "./details.css";
 import { auth } from "../../lib/firebase";
-import { useUserStore } from "../../lib/userStore";
+import { useChatStore } from "../../lib/chatStore";
 
 const Details = () => {
-  const { currentUser} = useUserStore();
+  const {user} = useChatStore()
   const handleLogOut = () => {
     auth.signOut();
   //  fetchUserInfo(null);
@@ -12,8 +12,8 @@ const Details = () => {
   return (
     <div className="detailContainer">
       <div className="infoUser">
-        <img src={currentUser.avatar || "/avatar.png"} alt="" className="pdp" />
-        <span className="nameUser">{currentUser.username}</span>
+        <img src={user.avatar || "/avatar.png"} alt="" className="pdp" />
+        <span className="nameUser">{user.username}</span>
         <span className="bioUser">Lorem ipsum dolor sit amet.</span>
       </div>
       <div className="details">

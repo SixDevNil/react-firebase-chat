@@ -80,7 +80,7 @@ const Chatlist = () => {
             </div>
             <div className="infoChat">
               <span>{chat.user.username}</span>
-              {/* <p>{chat.lastMessage}</p> */}
+              <p style={{color : "grey"}}>{chat.lastMessage}</p>
             </div>
           </div>
         ))}
