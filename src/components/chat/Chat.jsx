@@ -2,14 +2,25 @@ import { useEffect, useRef, useState } from "react";
 import "./chat.css";
 import EmojiPicker from "emoji-picker-react";
 import { useUserStore } from "../../lib/userStore";
-import { arrayUnion, doc, getDoc, onSnapshot, updateDoc } from "firebase/firestore";
+import {
+  arrayUnion,
+  doc,
+  getDoc,
+  onSnapshot,
+  updateDoc,
+} from "firebase/firestore";
 import { db } from "../../lib/firebase";
 import { useChatStore } from "../../lib/chatStore";
+import upload from "../../lib/upload";
 
 const Chat = () => {
   const [open, setOpen] = useState(false);
   const [text, setText] = useState("");
   const [chat, setChat] = useState(null);
+  const [file, setFile] = useState({
+    file: null,
+    url: "",
+  });
 
   const { chatId, user } = useChatStore();
   const { currentUser } = useUserStore();
@@ -21,7 +32,7 @@ const Chat = () => {
   }, []);
 
   useEffect(() => {
-    // raha tiana hiseho ilay componnet rehetra na null aza ilay chatId dia io, sinon any @ App no conditionnena
+    // raha tiana hiseho ilay component rehetra na null aza ilay chatId dia io, sinon any @ App no conditionnena
     // if (chatId) {
     const unSub = onSnapshot(doc(db, "chats", chatId), (res) => {
       setChat(res.data());
@@ -32,33 +43,49 @@ const Chat = () => {
     // }
   }, [chatId]);
 
-  console.log(chat);
+  // console.log(chat);
 
   const handleEmojiClick = (e) => {
     setText((prev) => prev + e.emoji);
     setOpen(false);
   };
 
+  const handleFile = (e) => {
+    if (e.target.files[0]) {
+      setFile({
+        file: e.target.files[0],
+        url: URL.createObjectURL(e.target.files[0]),
+      });
+    }
+  };
 
+ 
   const handleSend = async () => {
-    if (text === "") return;
+    // misy soratra ve ? sinon return
+    if (text === "" && file.file === null) return;
+    var imgUrl = null;
     try {
+      if (file.file) {
+        imgUrl = await upload(file.file);
+      }
+      //màj chats selon chatId
       await updateDoc(doc(db, "chats", chatId), {
         messages: arrayUnion({
           senderId: currentUser.id,
-          text,
+          ...(text  && { text }),
           createdAt: Date.now(),
+          ...(file && { img: imgUrl }),
         }),
       });
 
-      const userIds = [currentUser.id, user.id] ;
+      // màj userchats de l'envoyeur et du récepteur %id
+      const userIds = [currentUser.id, user.id];
 
-      userIds.forEach( async(id) => {
+      userIds.forEach(async (id) => {
+        const userChatRef = doc(db, "userchats", id);
+        const userChatSnapshot = await getDoc(userChatRef);
 
-        const userChatRef = doc(db, "userchats", id) ;
-        const userChatSnapshot = await getDoc(userChatRef) ;
-  
-        if (userChatSnapshot.exists()){
+        if (userChatSnapshot.exists()) {
           const userChatsData = userChatSnapshot.data();
           const chatIndex = userChatsData.chats.findIndex(
             (c) => c.chatId === chatId
@@ -69,16 +96,20 @@ const Chat = () => {
             id === currentUser.id ? true : false;
           userChatsData.chats[chatIndex].updatedAt = Date.now();
 
+          // màj userchats pour avoir le lastMessage
           await updateDoc(userChatRef, {
             chats: userChatsData.chats,
           });
         }
-      })
-
-     
+      });
     } catch (error) {
       console.log(error);
     }
+    setFile({
+      file: null,
+      url: "",
+    });
+    setText("");
   };
 
   return (
@@ -111,7 +142,7 @@ const Chat = () => {
               {message.img && (
                 <img src={message.img} alt="" className="photoJoint" />
               )}
-              <div className="textMessage">{message.text}</div>
+             {message.text && <div className="textMessage">{message.text}</div>}
               <div className="timesTamp">
                 {/* <p>{message.createdAt}</p> */}
               </div>
@@ -122,7 +153,19 @@ const Chat = () => {
         <div ref={endRef}></div>
       </div>
       <div className="bottom">
-        <img src="/img.png" alt="" className="option" />
+        <label
+          htmlFor="file"
+          style={{ display: "flex", justifyContent: "center" }}
+        >
+          <img src="/img.png" alt="" className="option" />
+        </label>
+        <input
+          type="file"
+          id="file"
+          name="file"
+          style={{ display: "none" }}
+          onChange={handleFile}
+        />
         <img src="/camera.png" alt="" className="option" />
         <img src="/mic.png" alt="" className="option" />
         <div className="input">
@@ -132,6 +175,7 @@ const Chat = () => {
             value={text}
             onChange={(e) => setText(e.target.value)}
           />
+          {file.url && <img src={file.url} alt="" className="photo" />}
         </div>
         <img
           src="/emoji.png"

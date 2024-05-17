@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import "./chatlist.css";
 import AddUser from "./addUser/AddUser";
 import { useUserStore } from "../../../lib/userStore";
-import { doc, getDoc, onSnapshot } from "firebase/firestore";
+import { doc, getDoc, onSnapshot, updateDoc } from "firebase/firestore";
 import { db } from "../../../lib/firebase";
 import { useChatStore } from "../../../lib/chatStore";
 
@@ -11,7 +11,7 @@ const Chatlist = () => {
   const [add, setAdd] = useState(false);
 
   const { currentUser } = useUserStore();
-  const { changeChat } = useChatStore();
+  const { chatId, changeChat } = useChatStore();
 
   useEffect(() => {
     // get realtime data pour la liste des users eo @ chat avy any @ BD, "onSnapshot",
@@ -46,8 +46,46 @@ const Chatlist = () => {
   };
 
   const handleMessage = async (chat) => {
-    changeChat(chat.chatId, chat.user);
+    const userchats = chats.map((item) => {
+      const { user, ...others } = item;
+      return others;
+    });
+
+    const chatIndex = userchats.findIndex(
+      (item) => item.chatId === chat.chatId
+    );
+
+    userchats[chatIndex].isSeen = true;
+
+    const userChatRef = doc(db, "userchats", currentUser.id);
+
+    try {
+      await updateDoc(userChatRef, {
+        chats: userchats,
+      });
+      changeChat(chat.chatId, chat.user);
+    } catch (error) {
+      console.log(error);
+    }
+
+    // afaka atao an'ito fa mavesatra ,y requette satria efa azo etsy ambony ny userchats dia natao anaty others destructuré
+    // const userChatRef = doc(db, "userchats", currentUser.id);
+    // const userChatSnapshot = await getDoc(userChatRef);
+
+    // if (userChatSnapshot.exists()) {
+    //   const userChatsData = userChatSnapshot.data();
+    //   const chatIndex = userChatsData.chats.findIndex(
+    //     (c) => c.chatId === chatId
+    //   );
+    //   userChatsData.chats[chatIndex].isSeen = true ;
+
+    //   // màj userchats pour avoir le lastMessage
+    //   await updateDoc(userChatRef, {
+    //     chats: userChatsData.chats,
+    //   });
+    // }
   };
+
   return (
     <div className="chatlist">
       <div className="searchContainer">
@@ -70,6 +108,9 @@ const Chatlist = () => {
             className="item"
             key={chat.chatId}
             onClick={() => handleMessage(chat)}
+            style={{
+              backgroundColor: chat?.isSeen ? "transparent" : "#5183fe",
+            }}
           >
             <div className="avatarContainer">
               <img
@@ -80,7 +121,7 @@ const Chatlist = () => {
             </div>
             <div className="infoChat">
               <span>{chat.user.username}</span>
-              <p style={{color : "grey"}}>{chat.lastMessage}</p>
+              <p style={{ color: "whitesmoke" }}>{chat.lastMessage}</p>
             </div>
           </div>
         ))}
@@ -91,3 +132,4 @@ const Chatlist = () => {
 };
 
 export default Chatlist;
+ 
