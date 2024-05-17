@@ -26,10 +26,9 @@ const Chat = () => {
   const { currentUser } = useUserStore();
 
   const endRef = useRef(null);
-
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, []);
+  }, [chatId]);
 
   useEffect(() => {
     // raha tiana hiseho ilay component rehetra na null aza ilay chatId dia io, sinon any @ App no conditionnena
@@ -72,9 +71,10 @@ const Chat = () => {
       await updateDoc(doc(db, "chats", chatId), {
         messages: arrayUnion({
           senderId: currentUser.id,
-          ...(text  && { text }),
+          ...(text && { text }),
           createdAt: Date.now(),
           ...(file && { img: imgUrl }),
+          // ...(var && {champs : val}) si var exist, champs collection = val, sinon champs n'existe pas
         }),
       });
 
@@ -136,20 +136,34 @@ const Chat = () => {
       </div>
       <div className="center">
         {chat?.messages?.map((message) => (
-          <div className="messageItem own" key={message.createdAt}>
-            <img src="/avatar.png" alt="" className="avatar" />
+          <div
+            className={
+              message.senderId === currentUser.id
+                ? "messageItem own"
+                : "messageItem"
+            }
+            key={message.createdAt}
+          >
+            {message.senderId !== currentUser.id && (
+              <img
+                src={user.avatar || "/avatar.png"}
+                alt=""
+                className="avatar"
+              />
+            )}
             <div className="message">
               {message.img && (
                 <img src={message.img} alt="" className="photoJoint" />
               )}
-             {message.text && <div className="textMessage">{message.text}</div>}
+              {message.text && (
+                <div className="textMessage">{message.text}</div>
+              )}
               <div className="timesTamp">
                 {/* <p>{message.createdAt}</p> */}
               </div>
             </div>
           </div>
         ))}
-
         <div ref={endRef}></div>
       </div>
       <div className="bottom">

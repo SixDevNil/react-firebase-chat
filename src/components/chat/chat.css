@@ -98,14 +98,12 @@
                 border-radius: 50%;
                 object-fit: cover;
             }
-
+            .photoJoint {
+                max-width: 100%;
+            }
             .message {
                 max-width: 70%;
                 text-align: justify;
-
-                .photoJoint {
-                    max-width: 100%;
-                }
 
                 .textMessage {
                     background-color: #dddddd35;
