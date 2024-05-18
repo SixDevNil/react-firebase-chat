@@ -1,14 +1,38 @@
 import React from "react";
 import "./details.css";
-import { auth } from "../../lib/firebase";
+import { auth, db } from "../../lib/firebase";
 import { useChatStore } from "../../lib/chatStore";
+import { useUserStore } from "../../lib/userStore";
+import { arrayUnion, doc, updateDoc } from "firebase/firestore";
 
 const Details = () => {
-  const {user} = useChatStore()
+  const { user, chatId, isCurrentUserBlocked, isReceiverBlocked } = useChatStore();
+  const {currentUser} = useUserStore()
+
   const handleLogOut = () => {
     auth.signOut();
-  //  fetchUserInfo(null);
+    //  fetchUserInfo(null);
+  };
+
+  const handleBlock = async () => {
+    const currentUserRef = doc(db, "users", currentUser.id ) ;
+    const userBlockRef = doc(db, "users", user.id ) ;
+   
+    try {
+      // update our blocked array
+      await updateDoc(currentUserRef, {
+        blocked : arrayUnion(user.id)
+      })
+
+      // update user blocked
+      await updateDoc(userBlockRef, {
+        blocked : arrayUnion(currentUser.id)
+      })
+    } catch (error) {
+      console.log(error);
+    }
   }
+
   return (
     <div className="detailContainer">
       <div className="infoUser">
@@ -90,8 +114,16 @@ const Details = () => {
         </div>{" "}
       </div>
       <div className="action">
-        <button className="actionButton">Block User</button>{" "}
-        <button className="logout" onClick={handleLogOut}>Logout</button>
+        <button className="actionButton" onClick={handleBlock}>
+          {isCurrentUserBlocked
+            ? "Get Blocked"
+            : isReceiverBlocked
+            ? "Blocked"
+            : "Block User"}
+        </button>{" "}
+        <button className="logout" onClick={handleLogOut}>
+          Logout
+        </button>
       </div>
     </div>
   );

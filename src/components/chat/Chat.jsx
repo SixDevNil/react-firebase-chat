@@ -21,20 +21,25 @@ const Chat = () => {
     file: null,
     url: "",
   });
+  const [isLoading, setIsLoading] = useState(false);
 
   const { chatId, user } = useChatStore();
   const { currentUser } = useUserStore();
 
   const endRef = useRef(null);
   useEffect(() => {
-    endRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [chatId]);
+    if(chatId){
+      endRef.current?.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [chatId, isLoading]);
 
   useEffect(() => {
+    setIsLoading(true);
     // raha tiana hiseho ilay component rehetra na null aza ilay chatId dia io, sinon any @ App no conditionnena
     // if (chatId) {
     const unSub = onSnapshot(doc(db, "chats", chatId), (res) => {
       setChat(res.data());
+      setIsLoading(false);
     });
     return () => {
       unSub();
@@ -58,12 +63,12 @@ const Chat = () => {
     }
   };
 
- 
   const handleSend = async () => {
     // misy soratra ve ? sinon return
     if (text === "" && file.file === null) return;
     var imgUrl = null;
     try {
+      setIsLoading(true);
       if (file.file) {
         imgUrl = await upload(file.file);
       }
@@ -91,7 +96,11 @@ const Chat = () => {
             (c) => c.chatId === chatId
           );
 
-          userChatsData.chats[chatIndex].lastMessage = text;
+          userChatsData.chats[chatIndex].lastMessage = text
+            ? text
+            : id === currentUser.id
+            ? "vous avez envoyé un objet"
+            : "a envoyé un objet";
           userChatsData.chats[chatIndex].isSeen =
             id === currentUser.id ? true : false;
           userChatsData.chats[chatIndex].updatedAt = Date.now();
@@ -104,12 +113,14 @@ const Chat = () => {
       });
     } catch (error) {
       console.log(error);
+    } finally {
+      setFile({
+        file: null,
+        url: "",
+      });
+      setText("");
+      setIsLoading(false);
     }
-    setFile({
-      file: null,
-      url: "",
-    });
-    setText("");
   };
 
   return (
@@ -146,7 +157,7 @@ const Chat = () => {
           >
             {message.senderId !== currentUser.id && (
               <img
-                src={user.avatar || "/avatar.png"}
+                src={message?.avatar || "/avatar.png"}
                 alt=""
                 className="avatar"
               />
