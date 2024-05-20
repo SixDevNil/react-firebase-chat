@@ -9,9 +9,10 @@ import { useChatStore } from "../../../lib/chatStore";
 const Chatlist = () => {
   const [chats, setChats] = useState([]);
   const [add, setAdd] = useState(false);
+  const [search, setSearch] = useState("") ;
 
   const { currentUser } = useUserStore();
-  const { chatId, changeChat, isReceiverBlocked } = useChatStore();
+  const { changeChat } = useChatStore();
 
   useEffect(() => {
     // get realtime data pour la liste des users eo @ chat avy any @ BD, "onSnapshot",
@@ -86,12 +87,20 @@ const Chatlist = () => {
     // }
   };
 
+  const chatFiltered = chats.filter((c) =>
+    c.user.username.toLowerCase().includes(search.toLowerCase())
+  );
+
   return (
     <div className="chatlist">
       <div className="searchContainer">
         <div className="left">
           <img src="/search.png" alt="searchIcon" className="icon" />
-          <input type="text" placeholder="Search" />
+          <input
+            type="text"
+            placeholder="Search"
+            onChange={(e) => setSearch(e.target.value)}
+          />
         </div>
         <div className="right">
           <img
@@ -103,7 +112,7 @@ const Chatlist = () => {
         </div>
       </div>
       <div className="chatItem">
-        {chats.map((chat) => (
+        {chatFiltered.map((chat) => (
           <div
             className="item"
             key={chat.chatId}

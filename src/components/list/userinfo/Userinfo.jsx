@@ -1,4 +1,3 @@
-import React from "react";
 import "./userinfo.css";
 import { useUserStore } from "../../../lib/userStore";
 const Userinfo = () => {
