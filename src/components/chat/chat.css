@@ -147,6 +147,10 @@
                 outline: none;
                 color: white;
                 background-color: transparent;
+                &:disabled {
+                    cursor: not-allowed;
+    
+                }
             }
             .photo{
                 width: 50px;
@@ -155,15 +159,21 @@
             }
         }
 
-        .button {
-            padding: 5px 20px;
-            border-radius: 5px;
-            background-color: #5183fe;
-            color: white;
-            border: none;
-            font-size: bold;
-            cursor: pointer;
-        }
+                .button {
+                    padding: 5px 20px;
+                    border-radius: 5px;
+                    background-color: #5183fe;
+                    color: white;
+                    border: none;
+                    font-size: bold;
+                    cursor: pointer;
+        
+                    &:disabled {
+                        cursor: not-allowed;
+                        background-color: #5182fe95;
+        
+                    }
+                }
 
         .emoji {
             position: absolute;

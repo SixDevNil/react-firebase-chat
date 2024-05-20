@@ -23,12 +23,12 @@ const Chat = () => {
   });
   const [isLoading, setIsLoading] = useState(false);
 
-  const { chatId, user } = useChatStore();
+  const { chatId, user, isCurrentUserBlocked, isReceiverBlocked } = useChatStore();
   const { currentUser } = useUserStore();
 
   const endRef = useRef(null);
   useEffect(() => {
-    if(chatId){
+    if (chatId) {
       endRef.current?.scrollIntoView({ behavior: "smooth" });
     }
   }, [chatId, isLoading]);
@@ -47,7 +47,7 @@ const Chat = () => {
     // }
   }, [chatId]);
 
-  // console.log(chat);
+  // console.log(chat.messages);
 
   const handleEmojiClick = (e) => {
     setText((prev) => prev + e.emoji);
@@ -129,13 +129,13 @@ const Chat = () => {
         <div className="userInfo">
           <div className="pdp">
             <img
-              src={user.avatar || "/avatar.png"}
+              src={user?.avatar || "/avatar.png"}
               alt="avatar"
               className="avatar"
             />
           </div>
           <div className="info">
-            <p className="username">{user.username}</p>
+            <p className="username">{user?.username || "Chat User"}</p>
             <span className="detail">Lorem ipsum dolor sit amet.</span>
           </div>
         </div>
@@ -157,7 +157,7 @@ const Chat = () => {
           >
             {message.senderId !== currentUser.id && (
               <img
-                src={message?.avatar || "/avatar.png"}
+                src={user?.avatar || "/avatar.png"}
                 alt=""
                 className="avatar"
               />
@@ -196,9 +196,12 @@ const Chat = () => {
         <div className="input">
           <input
             type="text"
-            placeholder="Type a message..."
+            placeholder={
+              isReceiverBlocked ? "You cannot type a message" : "Type a message"
+            }
             value={text}
             onChange={(e) => setText(e.target.value)}
+            disabled={isReceiverBlocked || isCurrentUserBlocked}
           />
           {file.url && <img src={file.url} alt="" className="photo" />}
         </div>
@@ -213,7 +216,11 @@ const Chat = () => {
           onEmojiClick={handleEmojiClick}
           className="emoji"
         />
-        <button className="button" onClick={handleSend}>
+        <button
+          className="button"
+          onClick={handleSend}
+          disabled={isReceiverBlocked || isCurrentUserBlocked}
+        >
           Send
         </button>
       </div>

@@ -11,7 +11,7 @@ const Chatlist = () => {
   const [add, setAdd] = useState(false);
 
   const { currentUser } = useUserStore();
-  const { chatId, changeChat } = useChatStore();
+  const { chatId, changeChat, isReceiverBlocked } = useChatStore();
 
   useEffect(() => {
     // get realtime data pour la liste des users eo @ chat avy any @ BD, "onSnapshot",

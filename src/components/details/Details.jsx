@@ -1,12 +1,11 @@
-import React from "react";
 import "./details.css";
 import { auth, db } from "../../lib/firebase";
 import { useChatStore } from "../../lib/chatStore";
 import { useUserStore } from "../../lib/userStore";
-import { arrayUnion, doc, updateDoc } from "firebase/firestore";
+import { arrayRemove, arrayUnion, doc, updateDoc } from "firebase/firestore";
 
 const Details = () => {
-  const { user, chatId, isCurrentUserBlocked, isReceiverBlocked } = useChatStore();
+  const { user, isCurrentUserBlocked, isReceiverBlocked, changeBlock } = useChatStore();
   const {currentUser} = useUserStore()
 
   const handleLogOut = () => {
@@ -15,19 +14,24 @@ const Details = () => {
   };
 
   const handleBlock = async () => {
+
+    if(!user) return ;
+
     const currentUserRef = doc(db, "users", currentUser.id ) ;
-    const userBlockRef = doc(db, "users", user.id ) ;
+    // const userBlockRef = doc(db, "users", user.id ) ;
    
     try {
       // update our blocked array
+      changeBlock()
       await updateDoc(currentUserRef, {
-        blocked : arrayUnion(user.id)
-      })
-
+        blocked: isReceiverBlocked
+          ? arrayRemove(user.id)
+          : arrayUnion(user.id),
+      });
       // update user blocked
-      await updateDoc(userBlockRef, {
-        blocked : arrayUnion(currentUser.id)
-      })
+      // await updateDoc(userBlockRef, {
+      //   blocked : arrayUnion(currentUser.id)
+      // })
     } catch (error) {
       console.log(error);
     }
@@ -36,8 +40,8 @@ const Details = () => {
   return (
     <div className="detailContainer">
       <div className="infoUser">
-        <img src={user.avatar || "/avatar.png"} alt="" className="pdp" />
-        <span className="nameUser">{user.username}</span>
+        <img src={user?.avatar || "/avatar.png"} alt="" className="pdp" />
+        <span className="nameUser">{user?.username || "Chat User"}</span>
         <span className="bioUser">Lorem ipsum dolor sit amet.</span>
       </div>
       <div className="details">
