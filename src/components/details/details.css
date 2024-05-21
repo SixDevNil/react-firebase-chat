@@ -2,7 +2,7 @@
     display: flex;
     flex: 1;
     flex-direction: column;
-
+   
     .infoUser {
         display: flex;
         flex-direction: column;
@@ -65,7 +65,26 @@
         .mediaDetails {
             display: flex;
             flex-direction: column;
+            height: 350px;
+            overflow-y: scroll;
+            scroll-behavior: smooth;
             gap: 10px;
+
+            &::-webkit-scrollbar {
+                width: 2px;
+            }
+
+            &::-webkit-scrollbar-track {
+                background-color: #dddddd35;
+            }
+
+            &::-webkit-scrollbar-thumb {
+                background-color: #fff;
+            }
+
+            &::-webkit-scrollbar-thumb:hover {
+                background-color: #aaaaaa6f;
+            }
 
             .mediaDetailsItem {
                 display: flex;
@@ -109,24 +128,25 @@
         }
     }
 
-    .action{
-        display : flex ;
+    .action {
+        display: flex;
         flex-direction: column;
-        gap :5px ;
-        margin : 10px 0px ;
+        gap: 5px;
+        margin: 10px 0px;
+
         button {
             margin: 0px 15px;
             padding: 7px;
             background-color: #bb392b;
-            border : none ;
+            border: none;
             border-radius: 10px;
             color: white;
             cursor: pointer;
-    
+
             &.logout {
                 background-color: #5183fe;
             }
         }
     }
-   
+
 }
